@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KSG: Kid-Safe Games Catalog</title>
+  <style>
+    /* ===== GLOBAL ===== */
+    :root {
+      --bg-dark: #050510;
+      --bg-panel: #111428;
+      --accent-pink: #ff4fa8;
+      --accent-green: #4cff8a;
+      --accent-purple: #b37dff;
+      --accent-yellow: #ffe66d;
+      --text-main: #f5f5ff;
+      --text-muted: #b0b3d6;
+      --border-radius: 10px;
+      --transition-fast: 0.15s ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1b1f3b 0, #050510 55%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple), var(--accent-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .tagline {
+      font-size: 0.9rem;
+      color: var(--accent-green);
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .badge {
+      background: rgba(76, 255, 138, 0.1);
+      border: 1px solid var(--accent-green);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+    }
+
+    /* ===== CATALOG GRID ===== */
+    .catalog {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .game-card {
+      background: linear-gradient(145deg, #090b18, #14172b);
+      border: 1px solid #2a2f4f;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform var(--transition-fast),
+        box-shadow var(--transition-fast), border-color var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .game-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-pink);
+      box-shadow: 0 12px 30px rgba(255, 79, 168, 0.2);
+    }
+
+    .game-thumbnail {
+      width: 100%;
+      height: 160px;
+      background: linear-gradient(135deg, #2a2f4f, #1b1f3b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      border-bottom: 2px solid #2a2f4f;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-thumbnail.batcave {
+      background: linear-gradient(135deg, #b37dff, #ff4fa8);
+    }
+
+    .game-info {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .game-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .game-category {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .game-description {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      flex: 1;
+      line-height: 1.5;
+    }
+
+    .game-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .game-tag {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(179, 125, 255, 0.15);
+      color: var(--accent-purple);
+    }
+
+    .game-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: rgba(255, 79, 168, 0.1);
+      border: 1px solid var(--accent-pink);
+      color: var(--accent-pink);
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: background var(--transition-fast);
+    }
+
+    .game-card:hover .game-cta {
+      background: rgba(255, 79, 168, 0.2);
+    }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      text-align: center;
+      padding: 20px;
+      border-top: 1px solid #262a45;
+      margin-top: 40px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--accent-green);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .footer-links a:hover {
+      color: var(--accent-pink);
+    }
+
+    @media (max-width: 640px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      .catalog {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎮 KSG: Kid-Safe Games</h1>
+      <p class="subtitle">A Free, Safe Game Catalog for Everyone</p>
+      <div class="tagline">
+        <span class="badge">✅ No Ads</span>
+        <span class="badge">✅ No Tracking</span>
+        <span class="badge">✅ No Paywalls</span>
+      </div>
+    </header>
+
+    <section class="catalog" id="catalog">
+      <!-- Game cards are inserted here by JavaScript -->
+    </section>
+
+    <footer>
+      <div class="footer-links">
+        <a href="https://github.com/CaptainLWS/KSG_Kid-Safe-Games" target="_blank">GitHub</a>
+        <a href="#contribute">How to Contribute</a>
+        <a href="#about">About</a>
+      </div>
+      <p>Built with ❤️ for safe, fun gaming. Open-source & free forever.</p>
+    </footer>
+  </div>
+
+  <script>
+    // Game catalog data
+    const games = [
+      {
+        id: "batcave-demo",
+        title: "Harley & The Chaos Sisters",
+        subtitle: "Batcave Demo",
+        category: "Adventure",
+        emoji: "🦇",
+        description:
+          "Explore the Batcave with Harley Quinn, Catwoman, Poison Ivy, and friends. Collect glowing stars while enjoying the company of DC's most beloved characters.",
+        tags: ["Adventure", "Kid-Safe", "Collectathon"],
+        url: "games/batcave-demo/index.html"
+      }
+      // More games can be added here
+    ];
+
+    // Render catalog
+    function renderCatalog() {
+      const catalogEl = document.getElementById("catalog");
+
+      if (games.length === 0) {
+        catalogEl.innerHTML = `
+          <div style="grid-column: 1 / -1;">
+            <div class="empty-state">
+              <div class="empty-state-icon">🎮</div>
+              <h2>No Games Yet</h2>
+              <p>Check back soon for new kid-safe games!</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      catalogEl.innerHTML = games
+        .map(
+          (game) => `
+        <a href="${game.url}" class="game-card" title="Play ${game.title}">
+          <div class="game-thumbnail ${game.id}">
+            ${game.emoji}
+          </div>
+          <div class="game-info">
+            <div class="game-title">${game.title}</div>
+            <div class="game-category">${game.subtitle || game.category}</div>
+            <p class="game-description">${game.description}</p>
+            <div class="game-tags">
+              ${game.tags.map((tag) => `<span class="game-tag">${tag}</span>`).join("")}
+            </div>
+            <button class="game-cta">
+              Play Now → 
+            </button>
+          </div>
+        </a>
+      `
+        )
+        .join("");
+    }
+
+    // Initialize
+    renderCatalog();
+  </script>
+</body>
+</html>
