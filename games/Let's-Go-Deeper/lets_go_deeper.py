@@ -35,90 +35,18 @@ class Player:
 # -----------------------------
 
 def build_creature_db() -> List[SeaCreature]:
-    # You can expand this list over time with more zones and species.
-    creatures = [
-        SeaCreature(
-            id=1,
-            name="Clownfish",
-            zone="Shallow",
-            rarity="Common",
-            size_cm=11,
-            fact="Clownfish live among sea anemones and are protected by a special mucus on their skin."
-        ),
-        SeaCreature(
-            id=2,
-            name="Green Sea Turtle",
-            zone="Shallow",
-            rarity="Uncommon",
-            size_cm=120,
-            fact="Green sea turtles can hold their breath for several hours while resting."
-        ),
-        SeaCreature(
-            id=3,
-            name="Manta Ray",
-            zone="Shallow",
-            rarity="Rare",
-            size_cm=700,
-            fact="Manta rays are filter feeders and can have wingspans over 7 meters."
-        ),
-        SeaCreature(
-            id=4,
-            name="Lanternfish",
-            zone="Twilight",
-            rarity="Common",
-            size_cm=15,
-            fact="Lanternfish use bioluminescent organs to glow in the dark ocean."
-        ),
-        SeaCreature(
-            id=5,
-            name="Vampire Squid",
-            zone="Twilight",
-            rarity="Uncommon",
-            size_cm=30,
-            fact="The vampire squid lives in low-oxygen zones and has glowing blue eyes."
-        ),
-        SeaCreature(
-            id=6,
-            name="Giant Squid",
-            zone="Midnight",
-            rarity="Rare",
-            size_cm=1200,
-            fact="Giant squids are elusive deep-sea creatures with eyes as big as dinner plates."
-        ),
-        SeaCreature(
-            id=7,
-            name="Anglerfish",
-            zone="Midnight",
-            rarity="Uncommon",
-            size_cm=40,
-            fact="Anglerfish use a glowing lure on their head to attract prey in the darkness."
-        ),
-        SeaCreature(
-            id=8,
-            name="Dumbo Octopus",
-            zone="Abyss",
-            rarity="Rare",
-            size_cm=20,
-            fact="Dumbo octopuses flap their ear-like fins to swim gracefully in the deep sea."
-        ),
-        SeaCreature(
-            id=9,
-            name="Deep-Sea Dragonfish",
-            zone="Abyss",
-            rarity="Uncommon",
-            size_cm=30,
-            fact="Dragonfish have transparent teeth and can produce red bioluminescent light."
-        ),
-        SeaCreature(
-            id=10,
-            name="Coelacanth",
-            zone="Twilight",
-            rarity="Legendary",
-            size_cm=180,
-            fact="Coelacanths were once thought extinct and are often called 'living fossils'."
-        ),
-    ]
-    return creatures
+from creature_loader import load_creature_packs
+
+def start_game():
+    print_header()
+    name = input("Enter your explorer name: ").strip() or "Explorer"
+    player = Player(name=name)
+
+    print("\nLoading marine biology packs...")
+    db = load_creature_packs()
+    print(f"Loaded {len(db)} species.\n")
+
+    main_menu(player, db)
 
 
 # -----------------------------
