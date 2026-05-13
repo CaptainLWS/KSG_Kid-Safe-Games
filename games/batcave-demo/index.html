@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Harley & The Chaos Sisters – Batcave Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* ===== GLOBAL ===== */
+    :root {
+      --bg-dark: #050510;
+      --bg-panel: #111428;
+      --accent-pink: #ff4fa8;
+      --accent-green: #4cff8a;
+      --accent-purple: #b37dff;
+      --accent-yellow: #ffe66d;
+      --text-main: #f5f5ff;
+      --text-muted: #b0b3d6;
+      --danger-red: #ff4b5c;
+      --locked-gray: #555a70;
+      --border-radius: 10px;
+      --transition-fast: 0.15s ease-out;
+      --tile-size: 48px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1b1f3b 0, #050510 55%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    #game-root {
+      width: 100%;
+      max-width: 960px;
+      background: linear-gradient(145deg, #090b18, #14172b);
+      border-radius: 16px;
+      border: 1px solid #2a2f4f;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.6);
+      padding: 16px;
+      display: grid;
+      grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 720px) {
+      #game-root {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: rgba(76, 255, 138, 0.1);
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition-fast), border-color var(--transition-fast);
+      margin-bottom: 12px;
+    }
+
+    .back-button:hover {
+      background: rgba(76, 255, 138, 0.2);
+      border-color: var(--accent-green);
+    }
+
+    /* ===== LEFT PANEL: CHARACTER SELECT ===== */
+    .panel {
+      background: var(--bg-panel);
+      border-radius: var(--border-radius);
+      padding: 12px;
+      border: 1px solid #262a45;
+    }
+
+    .char-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .char-card {
+      position: relative;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #2f3458;
+      background: #151832;
+      cursor: pointer;
+      transition: transform var(--transition-fast),
+        box-shadow var(--transition-fast), border-color var(--transition-fast),
+        background var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .char-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
+      border-color: var(--accent-purple);
+    }
+
+    .char-card.selected {
+      border-color: var(--accent-pink);
+      box-shadow: 0 0 0 2px rgba(255, 79, 168, 0.4);
+    }
+
+    .char-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .char-role {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .char-tag {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-top: 2px;
+    }
+
+    .tag-harley {
+      background: rgba(255, 79, 168, 0.15);
+      color: var(--accent-pink);
+    }
+
+    .tag-catwoman {
+      background: rgba(179, 125, 255, 0.15);
+      color: var(--accent-purple);
+    }
+
+    .tag-ivy {
+      background: rgba(76, 255, 138, 0.15);
+      color: var(--accent-green);
+    }
+
+    .tag-batman {
+      background: rgba(255, 230, 109, 0.15);
+      color: var(--accent-yellow);
+    }
+
+    .tag-alfred {
+      background: rgba(176, 179, 214, 0.15);
+      color: var(--text-muted);
+    }
+
+    .tag-locked {
+      background: rgba(85, 90, 112, 0.2);
+      color: var(--locked-gray);
+    }
+
+    .locked-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 5, 16, 0.8);
+      border-radius: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      color: var(--locked-gray);
+    }
+
+    .char-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .controls-box {
+      margin-top: 8px;
+      padding: 8px;
+      border-radius: 8px;
+      background: #101326;
+      border: 1px dashed #30365a;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .controls-box strong {
+      color: var(--accent-yellow);
+    }
+
+    /* ===== RIGHT PANEL: GAME AREA ===== */
+    #game-area {
+      position: relative;
+      background: radial-gradient(circle at top, #1b1f3b 0, #050510 60%);
+      border-radius: var(--border-radius);
+      border: 1px solid #262a45;
+      overflow: hidden;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      font-size: 0.85rem;
+      background: linear-gradient(90deg, #14172b, #191c34);
+      border-bottom: 1px solid #262a45;
+    }
+
+    #hud span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    #hud .label {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    #hud .value {
+      font-weight: 600;
+    }
+
+    #hud .value.character {
+      color: var(--accent-pink);
+    }
+
+    #hud .value.score {
+      color: var(--accent-yellow);
+    }
+
+    #hud .value.tip {
+      color: var(--accent-green);
+    }
+
+    #playfield {
+      position: relative;
+      flex: 1;
+      padding: 10px;
+      display: grid;
+      grid-template-rows: repeat(7, var(--tile-size));
+      grid-template-columns: repeat(10, var(--tile-size));
+      justify-content: center;
+      align-content: center;
+      gap: 2px;
+    }
+
+    .tile {
+      width: var(--tile-size);
+      height: var(--tile-size);
+      border-radius: 6px;
+      background: rgba(10, 12, 26, 0.9);
+      border: 1px solid #1b1f3b;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tile.floor {
+      background: linear-gradient(180deg, #14172b, #090b18);
+    }
+
+    .tile.decor::before {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(88, 96, 160, 0.6);
+      opacity: 0.5;
+    }
+
+    .player {
+      position: absolute;
+      width: calc(var(--tile-size) - 10px);
+      height: calc(var(--tile-size) - 10px);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 4px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.7);
+      transition: transform 0.08s linear;
+    }
+
+    .player.harley {
+      background: radial-gradient(circle at top, #ff9fd2, #ff4fa8);
+      border: 2px solid #ffd6f0;
+      color: #2b0014;
+    }
+
+    .player.catwoman {
+      background: radial-gradient(circle at top, #d2c2ff, #b37dff);
+      border: 2px solid #f0e7ff;
+      color: #1a0b33;
+    }
+
+    .player.ivy {
+      background: radial-gradient(circle at top, #b8ffd2, #4cff8a);
+      border: 2px solid #e5ffe5;
+      color: #00210f;
+    }
+
+    .player.batman {
+      background: radial-gradient(circle at top, #ffe66d, #c9a52b);
+      border: 2px solid #fff4c2;
+      color: #2b2300;
+    }
+
+    .player.alfred {
+      background: radial-gradient(circle at top, #f0f2ff, #b0b3d6);
+      border: 2px solid #ffffff;
+      color: #111428;
+    }
+
+    .star {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #fffbe0, #ffe66d);
+      box-shadow: 0 0 10px rgba(255, 230, 109, 0.9);
+    }
+
+    .star::before,
+    .star::after {
+      content: "";
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .star::after {
+      inset: 2px;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    #message {
+      position: absolute;
+      inset: auto 0 10px 0;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    #message span {
+      background: rgba(5, 5, 16, 0.8);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #262a45;
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body>
+  <div id="game-root">
+    <!-- LEFT: CHARACTER SELECT -->
+    <div class="panel">
+      <a href="../../index.html" class="back-button">← Back to Catalog</a>
+      
+      <h1>Harley &amp; The Chaos Sisters</h1>
+      <div class="subtitle">Batcave Demo – Kid‑Safe Edition</div>
+
+      <p class="char-hint">
+        Choose a character, then use <strong>Arrow Keys</strong> or
+        <strong>WASD</strong> to move and collect glowing stars.
+      </p>
+
+      <div class="char-list" id="char-list">
+        <!-- Cards are created by JavaScript for clarity, but you could hardcode them too -->
+      </div>
+
+      <div class="controls-box">
+        <div><strong>Move:</strong> Arrow Keys or WASD</div>
+        <div><strong>Goal:</strong> Walk around the Batcave and collect stars.</div>
+        <div><strong>Safe:</strong> No timers, no damage, no ads, no tracking.</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: GAME AREA -->
+    <div id="game-area">
+      <div id="hud">
+        <span>
+          <span class="label">Character:</span>
+          <span class="value character" id="hud-character">None</span>
+        </span>
+        <span>
+          <span class="label">Stars:</span>
+          <span class="value score" id="hud-score">0</span>
+        </span>
+        <span>
+          <span class="label">Tip:</span>
+          <span class="value tip" id="hud-tip">Pick a character to begin.</span>
+        </span>
+      </div>
+      <div id="playfield"></div>
+      <div id="message"><span>Welcome to the upgraded Batcave.</span></div>
+    </div>
+  </div>
+
+  <script>
+    // =========================
+    // SIMPLE KID-SAFE GAME LOGIC
+    // =========================
+
+    // Character definitions
+    const CHARACTERS = [
+      {
+        id: "harley",
+        name: "Harley Quinn",
+        role: "Chaos Sister",
+        tagClass: "tag-harley",
+        tagLabel: "Playful",
+        description: "Bounces through the Batcave collecting stars and laughter."
+      },
+      {
+        id: "catwoman",
+        name: "Catwoman",
+        role: "Shadow Acrobat",
+        tagClass: "tag-catwoman",
+        tagLabel: "Stealth",
+        description: "Glides through the shadows, graceful and precise."
+      },
+      {
+        id: "ivy",
+        name: "Poison Ivy",
+        role: "Plant Whisperer",
+        tagClass: "tag-ivy",
+        tagLabel: "Nature",
+        description: "Brings a little green into the neon Batcave."
+      },
+      {
+        id: "batman",
+        name: "Batman",
+        role: "World's Best Detective",
+        tagClass: "tag-batman",
+        tagLabel: "Classic",
+        description: "Quietly making sure everyone gets home safe."
+      },
+      {
+        id: "alfred",
+        name: "Alfred Pennyworth",
+        role: "Legendary Support",
+        tagClass: "tag-alfred",
+        tagLabel: "Tea Time",
+        description: "Keeps the Batcave calm, even during star-collecting."
+      },
+      {
+        id: "deadpool",
+        name: "Deadpool",
+        role: "Fourth Wall Tourist",
+        tagClass: "tag-locked",
+        tagLabel: "Locked",
+        description: "Unlockable in a future, sillier version.",
+        locked: true
+      }
+    ];
+
+    const charListEl = document.getElementById("char-list");
+    const hudCharacterEl = document.getElementById("hud-character");
+    const hudScoreEl = document.getElementById("hud-score");
+    const hudTipEl = document.getElementById("hud-tip");
+    const playfieldEl = document.getElementById("playfield");
+    const messageEl = document.getElementById("message").querySelector("span");
+
+    // Grid configuration
+    const ROWS = 7;
+    const COLS = 10;
+    const TILE_SIZE = 48; // must match CSS var
+
+    let tiles = [];
+    let player = {
+      active: false,
+      row: 5,
+      col: 2,
+      element: null,
+      characterId: null,
+      score: 0
+    };
+
+    let stars = [];
+
+    // Create character cards
+    function createCharacterCards() {
+      CHARACTERS.forEach((ch) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "char-card";
+        card.dataset.id = ch.id;
+
+        const name = document.createElement("div");
+        name.className = "char-name";
+        name.textContent = ch.name;
+
+        const role = document.createElement("div");
+        role.className = "char-role";
+        role.textContent = ch.role;
+
+        const tag = document.createElement("span");
+        tag.className = "char-tag " + ch.tagClass;
+        tag.textContent = ch.tagLabel;
+
+        card.appendChild(name);
+        card.appendChild(role);
+        card.appendChild(tag);
+
+        if (ch.locked) {
+          const overlay = document.createElement("div");
+          overlay.className = "locked-overlay";
+          overlay.textContent = "Locked (for later!)";
+          card.appendChild(overlay);
+          card.disabled = true;
+        } else {
+          card.addEventListener("click", () => selectCharacter(ch.id));
+        }
+
+        charListEl.appendChild(card);
+      });
+    }
+
+    // Build playfield grid
+    function createPlayfield() {
+      playfieldEl.innerHTML = "";
+      tiles = [];
+
+      for (let r = 0; r < ROWS; r++) {
+        const row = [];
+        for (let c = 0; c < COLS; c++) {
+          const tile = document.createElement("div");
+          tile.className = "tile";
+
+          // Simple decoration: bottom row is floor, some random decor tiles
+          if (r === ROWS - 1) {
+            tile.classList.add("floor");
+          } else if (Math.random() < 0.12) {
+            tile.classList.add("decor");
+          }
+
+          playfieldEl.appendChild(tile);
+          row.push(tile);
+        }
+        tiles.push(row);
+      }
+    }
+
+    // Place player element
+    function createPlayerElement() {
+      if (player.element) {
+        player.element.remove();
+      }
+      const el = document.createElement("div");
+      el.className = "player";
+      el.textContent = "★";
+      playfieldEl.appendChild(el);
+      player.element = el;
+      updatePlayerPosition();
+    }
+
+    function updatePlayerAppearance() {
+      if (!player.element || !player.characterId) return;
+      player.element.className = "player " + player.characterId;
+      const ch = CHARACTERS.find((c) => c.id === player.characterId);
+      if (ch) {
+        player.element.textContent = ch.name.split(" ")[0];
+      }
+    }
+
+    function updatePlayerPosition() {
+      if (!player.element) return;
+      const x = player.col * (TILE_SIZE + 2) + 10; // + padding
+      const y = player.row * (TILE_SIZE + 2) + 10;
+      player.element.style.transform = `translate(${x + 5}px, ${y + 5}px)`;
+      checkStarCollision();
+    }
+
+    // Stars
+    function spawnStars(count = 5) {
+      // Clear old stars
+      stars.forEach((s) => s.element.remove());
+      stars = [];
+
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement("div");
+        star.className = "star";
+
+        // Random tile that is not bottom row edge
+        const row = Math.floor(Math.random() * (ROWS - 1));
+        const col = Math.floor(Math.random() * COLS);
+
+        const x = col * (TILE_SIZE + 2) + 10 + TILE_SIZE / 2 - 9;
+        const y = row * (TILE_SIZE + 2) + 10 + TILE_SIZE / 2 - 9;
+
+        star.style.transform = `translate(${x}px, ${y}px)`;
+
+        playfieldEl.appendChild(star);
+        stars.push({ row, col, element: star });
+      }
+    }
+
+    function checkStarCollision() {
+      stars = stars.filter((s) => {
+        if (s.row === player.row && s.col === player.col) {
+          // collected
+          s.element.remove();
+          player.score += 1;
+          hudScoreEl.textContent = player.score;
+          messageEl.textContent = "Nice! You collected a star.";
+          return false;
+        }
+        return true;
+      });
+
+      if (stars.length === 0) {
+        messageEl.textContent = "All stars collected! New ones appeared.";
+        spawnStars(5);
+      }
+    }
+
+    // Character selection
+    function selectCharacter(id) {
+      player.characterId = id;
+      player.active = true;
+      player.score = 0;
+      hudScoreEl.textContent = "0";
+
+      // Reset position
+      player.row = ROWS - 2;
+      player.col = 1;
+
+      // Update HUD
+      const ch = CHARACTERS.find((c) => c.id === id);
+      hudCharacterEl.textContent = ch ? ch.name : "Unknown";
+      hudTipEl.textContent = ch ? ch.description : "Walk around and collect stars.";
+      messageEl.textContent = "Use Arrow Keys or WASD to move.";
+
+      // Update card selection visuals
+      document
+        .querySelectorAll(".char-card")
+        .forEach((card) => card.classList.remove("selected"));
+      const selectedCard = document.querySelector(`.char-card[data-id="${id}"]`);
+      if (selectedCard) selectedCard.classList.add("selected");
+
+      createPlayerElement();
+      updatePlayerAppearance();
+      spawnStars(5);
+    }
+
+    // Movement
+    function movePlayer(dx, dy) {
+      if (!player.active) return;
+      const newRow = player.row + dy;
+      const newCol = player.col + dx;
+      if (newRow < 0 || newRow >= ROWS) return;
+      if (newCol < 0 || newCol >= COLS) return;
+      player.row = newRow;
+      player.col = newCol;
+      updatePlayerPosition();
+    }
+
+    function handleKeyDown(e) {
+      const key = e.key.toLowerCase();
+      if (["arrowup", "w"].includes(key)) {
+        movePlayer(0, -1);
+      } else if (["arrowdown", "s"].includes(key)) {
+        movePlayer(0, 1);
+      } else if (["arrowleft", "a"].includes(key)) {
+        movePlayer(-1, 0);
+      } else if (["arrowright", "d"].includes(key)) {
+        movePlayer(1, 0);
+      }
+    }
+
+    // Init
+    createCharacterCards();
+    createPlayfield();
+    window.addEventListener("keydown", handleKeyDown);
+  </script>
+</body>
+</html>
