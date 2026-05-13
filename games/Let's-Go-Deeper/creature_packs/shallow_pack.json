@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "name": "Clownfish",
+    "zone": "Shallow",
+    "rarity": "Common",
+    "size_cm": 11,
+    "fact": "Clownfish live among sea anemones and are protected by a special mucus."
+  },
+  {
+    "id": 2,
+    "name": "Green Sea Turtle",
+    "zone": "Shallow",
+    "rarity": "Uncommon",
+    "size_cm": 120,
+    "fact": "Green sea turtles can hold their breath for several hours while resting."
+  }
+]
