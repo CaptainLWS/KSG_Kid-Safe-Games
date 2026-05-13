@@ -18,9 +18,11 @@ KSG is a community-driven project to create a **safe, free game catalog** where 
 ## 🚀 Quick Start
 
 ### Play Games
+
 Visit the live catalog: **[KSG Games Catalog](https://captainlws.github.io/KSG_Kid-Safe-Games/)**
 
 ### Add a Game
+
 See [CONTRIBUTING.md](CONTRIBUTING.md) for a complete step-by-step guide.
 
 **Quick overview:**
