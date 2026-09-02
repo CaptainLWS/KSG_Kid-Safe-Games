@@ -1,0 +1,1 @@
+{"name":"space-leaf-ecosystem","private":true,"version":"0.1.0","packageManager":"pnpm@10.15.0","scripts":{"dev":"pnpm --filter @space-leaf/web dev","build":"pnpm --filter @space-leaf/web build","lint":"pnpm --filter @space-leaf/web lint","typecheck":"pnpm --filter @space-leaf/web typecheck"},"devDependencies":{"typescript":"^5.9.2"}}
