@@ -3,5 +3,10 @@
   "private": true,
   "version": "0.1.0",
   "workspaces": ["apps/*", "packages/*"],
-  "scripts": {"dev": "npm --workspace @space-leaf/ecosystem run dev", "build": "npm --workspace @space-leaf/ecosystem run build"}
+  "scripts": {
+    "dev": "npm --workspace @space-leaf/ecosystem run dev",
+    "build": "npm --workspace @space-leaf/ecosystem run build",
+    "test": "npm --workspace @space-leaf/ecosystem run test",
+    "typecheck": "npm --workspace @space-leaf/ecosystem run typecheck"
+  }
 }
