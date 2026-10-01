@@ -1,0 +1,7 @@
+{
+  "name": "space-leaf-ecosystem",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {"dev": "npm --workspace @space-leaf/ecosystem run dev", "build": "npm --workspace @space-leaf/ecosystem run build"}
+}

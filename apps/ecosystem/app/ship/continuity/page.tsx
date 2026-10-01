@@ -1,0 +1,5 @@
+import { createClient } from '@/lib/supabase/server'
+import { recordContinuityEvent } from '@/lib/ecosystem/actions'
+
+export const dynamic='force-dynamic'
+export default async function Continuity(){const supabase=await createClient(); const {data:{user}}=await supabase.auth.getUser(); if(!user)return null; const {data:state}=await supabase.from('ecosystem_user_state').select('*').eq('user_id',user.id).maybeSingle(); const {data:events}=await supabase.from('ecosystem_events').select('event_type,safety_status,created_at').eq('user_id',user.id).order('created_at',{ascending:false}).limit(10); return <main style={{maxWidth:960,margin:'0 auto',padding:40,fontFamily:'system-ui'}}><h1>Jarvondis Continuity</h1><p>Persistent adaptation and event state for the authenticated user.</p><pre>{JSON.stringify(state?.adaptation??{mode:'default',pace:'guided',safety:'kid_safe'},null,2)}</pre><form action={recordContinuityEvent}><button>Record safe continuity event</button></form><h2>Captain's Log / Events</h2><ul>{events?.map((e,i)=><li key={i}>{e.event_type} — {e.safety_status} — {new Date(e.created_at).toLocaleString()}</li>)}</ul></main>}
